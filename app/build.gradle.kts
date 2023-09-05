@@ -7,6 +7,10 @@ android {
     namespace = "com.tonyk.android.homework3"
     compileSdk = 33
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId = "com.tonyk.android.homework3"
         minSdk = 24
@@ -44,4 +48,6 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    implementation ("com.github.yukuku:ambilwarna:2.0.1")
 }

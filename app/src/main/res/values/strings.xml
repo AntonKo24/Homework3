@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Homework3</string>
+
+    <string name="Seconds">Seconds</string>
+    <string name="Minutes">Minutes</string>
+    <string name="Hours">Hours</string>
+    <string name="Pick">Pick Color for:</string>
 </resources>
