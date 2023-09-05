@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Homework3</string>
+
+    <string name="Load">Load</string>
+    <string name="URL">Enter Image URL</string>
+
 </resources>

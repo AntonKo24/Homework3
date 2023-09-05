@@ -2,7 +2,7 @@ package com.tonyk.android.homework3
 
 
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.squareup.picasso.Callback
@@ -20,22 +20,34 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.buttonLoad.setOnClickListener {
-            val imageUrl = binding.editTextUrl.text.toString()
-            Log.d("yoo", imageUrl)
-            if (imageUrl.isNotEmpty()) {
-                Picasso.get()
-                    .load(imageUrl)
-                    .into(binding.imageView, object : Callback {
-                        override fun onSuccess() {
-                        }
+            loadImage()
+        }
 
-                        override fun onError(e: Exception?) {
-                            Toast.makeText(this@MainActivity, "Failed to load image. ${e?.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    })
-            } else {
-                Toast.makeText(this@MainActivity, "Please enter a valid image URL", Toast.LENGTH_SHORT).show()
-            }
+        binding.editTextUrl.setOnEditorActionListener { _, _, _ ->
+        loadImage()
+            return@setOnEditorActionListener true
+        }
+    }
+
+    private fun loadImage() {
+        binding.progressBar.visibility = View.VISIBLE
+        val imageUrl = binding.editTextUrl.text.toString()
+        if (imageUrl.isNotEmpty()) {
+            Picasso.get()
+                .load(imageUrl)
+                .error(R.drawable.error)
+                .into(binding.imageView, object : Callback {
+                    override fun onSuccess() {
+                        binding.progressBar.visibility = View.GONE
+                    }
+                    override fun onError(e: Exception?) {
+                        Toast.makeText(this@MainActivity, "Failed to load image. ${e?.message}", Toast.LENGTH_SHORT).show()
+                        binding.progressBar.visibility = View.GONE
+                    }
+                })
+        } else {
+            Toast.makeText(this@MainActivity, "Please enter a valid image URL", Toast.LENGTH_SHORT).show()
+            binding.progressBar.visibility = View.GONE
         }
     }
 }
