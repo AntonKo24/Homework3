@@ -1,5 +1,6 @@
 package com.tonyk.android.homework3
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -33,10 +34,21 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
     private val calendar = Calendar.getInstance()
 
     private val timeFormat = SimpleDateFormat("hh:mm:ss", Locale.getDefault())
-    private val currentDate = Date()
+    private var currentDate = Date()
 
 
     init {
+
+        val timeAnimator = ValueAnimator.ofFloat(0f, 1f)
+        timeAnimator.duration = 1000
+        timeAnimator.repeatCount = ValueAnimator.INFINITE
+        timeAnimator.addUpdateListener { animation ->
+            currentDate = Date()
+            invalidate()
+        }
+        timeAnimator.start()
+
+
 
         tickPaint.style = Paint.Style.STROKE
         tickPaint.strokeWidth = 4f
@@ -54,13 +66,7 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         textPaint.style = Paint.Style.FILL
         textPaint.textSize = 40f
 
-        CoroutineScope(Dispatchers.Main).launch {
-            while (true) {
-                updateDate()
-                invalidate()
-                delay(1000)
-            }
-        }
+
 
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.AnalogClockView)
         val secondHandColor = typedArray.getColor(R.styleable.AnalogClockView_secondHandColor, Color.RED)
@@ -155,9 +161,6 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         invalidate()
     }
 
-    private fun updateDate() {
-        currentDate.time = System.currentTimeMillis()
-    }
 }
 
 
