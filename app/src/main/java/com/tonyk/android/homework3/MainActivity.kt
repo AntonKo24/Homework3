@@ -21,13 +21,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.buttonLoad.setOnClickListener {
-            loadImage()
-        }
-
         binding.editTextUrl.setOnEditorActionListener { _, _, _ ->
         loadImage()
-            return@setOnEditorActionListener true
+            true
         }
     }
 
