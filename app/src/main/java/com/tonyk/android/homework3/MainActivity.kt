@@ -1,8 +1,10 @@
 package com.tonyk.android.homework3
 
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.squareup.picasso.Callback
@@ -38,6 +40,8 @@ class MainActivity : AppCompatActivity() {
                 .error(R.drawable.error)
                 .into(binding.imageView, object : Callback {
                     override fun onSuccess() {
+                        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(binding.editTextUrl.windowToken, 0)
                         binding.progressBar.visibility = View.GONE
                     }
                     override fun onError(e: Exception?) {
