@@ -68,24 +68,26 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
 
             drawClockFace(this, scaledClockRadius)
             drawClockHands(this, scaledSecondHandLength, scaledMinuteHandLength, scaledHourHandLength)
-
         }
     }
 
     private fun drawClockFace(canvas: Canvas, clockRadius: Float) {
-
         val innerRadius = clockRadius - 20f
         canvas.drawCircle(center.x, center.y, innerRadius, paint)
 
+        val tickAngles = DoubleArray(12) { Math.PI / 6 * it }
+        val cosValues = FloatArray(12) { cos(tickAngles[it]).toFloat() }
+        val sinValues = FloatArray(12) { sin(tickAngles[it]).toFloat() }
+
         for (i in 0..11) {
-            val angle = Math.PI / 6 * i
-            val startX = center.x + (innerRadius - tickLength) * cos(angle).toFloat()
-            val startY = center.y + (innerRadius - tickLength) * sin(angle).toFloat()
-            val endX = center.x + innerRadius * cos(angle).toFloat()
-            val endY = center.y + innerRadius * sin(angle).toFloat()
+            val startX = center.x + (innerRadius - tickLength) * cosValues[i]
+            val startY = center.y + (innerRadius - tickLength) * sinValues[i]
+            val endX = center.x + innerRadius * cosValues[i]
+            val endY = center.y + innerRadius * sinValues[i]
             canvas.drawLine(startX, startY, endX, endY, tickPaint)
         }
     }
+
 
     private fun drawClockHands(canvas: Canvas, secondHandLength: Float, minuteHandLength: Float, hourHandLength: Float) {
         calendar.time = currentDate
@@ -156,5 +158,4 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
     private fun drawHand(canvas: Canvas, startX: Float, startY: Float, endX: Float, endY: Float, paint: Paint) {
         canvas.drawLine(startX, startY, endX, endY, paint)
     }
-
 }
