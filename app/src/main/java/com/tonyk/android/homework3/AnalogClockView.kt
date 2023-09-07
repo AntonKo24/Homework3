@@ -83,8 +83,9 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        if (canvas == null) return
 
-        canvas?.apply {
+        canvas.apply {
             center.x = width.toFloat() / 2
             center.y = height.toFloat() / 2
 
@@ -126,17 +127,25 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         val minuteAngle = Math.PI * 2 * (minute + second / 60.0) / 60 - Math.PI / 2
         val hourAngle = Math.PI * 2 * (hour + minute / 60.0) / 12 - Math.PI / 2
 
-        val secondHandX = center.x + secondHandLength * Math.cos(secondAngle).toFloat()
-        val secondHandY = center.y + secondHandLength * Math.sin(secondAngle).toFloat()
-        canvas.drawLine(center.x, center.y, secondHandX, secondHandY, secondHandPaint)
+        val offset = 0.2f * secondHandLength
 
-        val minuteHandX = center.x + minuteHandLength * Math.cos(minuteAngle).toFloat()
-        val minuteHandY = center.y + minuteHandLength * Math.sin(minuteAngle).toFloat()
-        canvas.drawLine(center.x, center.y, minuteHandX, minuteHandY, minuteHandPaint)
+        val secondHandStartX = center.x - offset * cos(secondAngle).toFloat()
+        val secondHandStartY = center.y - offset * sin(secondAngle).toFloat()
+        val secondHandEndX = center.x + secondHandLength * cos(secondAngle).toFloat()
+        val secondHandEndY = center.y + secondHandLength * sin(secondAngle).toFloat()
+        canvas.drawLine(secondHandStartX, secondHandStartY, secondHandEndX, secondHandEndY, secondHandPaint)
 
-        val hourHandX = center.x + hourHandLength * Math.cos(hourAngle).toFloat()
-        val hourHandY = center.y + hourHandLength * Math.sin(hourAngle).toFloat()
-        canvas.drawLine(center.x, center.y, hourHandX, hourHandY, hourHandPaint)
+        val minuteHandStartX = center.x - offset * cos(minuteAngle).toFloat()
+        val minuteHandStartY = center.y - offset * sin(minuteAngle).toFloat()
+        val minuteHandEndX = center.x + minuteHandLength * cos(minuteAngle).toFloat()
+        val minuteHandEndY = center.y + minuteHandLength * sin(minuteAngle).toFloat()
+        canvas.drawLine(minuteHandStartX, minuteHandStartY, minuteHandEndX, minuteHandEndY, minuteHandPaint)
+
+        val hourHandStartX = center.x - offset * cos(hourAngle).toFloat()
+        val hourHandStartY = center.y - offset * sin(hourAngle).toFloat()
+        val hourHandEndX = center.x + hourHandLength * cos(hourAngle).toFloat()
+        val hourHandEndY = center.y + hourHandLength * sin(hourAngle).toFloat()
+        canvas.drawLine(hourHandStartX, hourHandStartY, hourHandEndX, hourHandEndY, hourHandPaint)
     }
 
     private fun drawTimeText(canvas: Canvas, timeText: String) {
