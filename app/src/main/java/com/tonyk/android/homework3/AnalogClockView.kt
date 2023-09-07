@@ -31,6 +31,9 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
 
     init {
 
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 8f
+
         tickPaint.style = Paint.Style.STROKE
         tickPaint.strokeWidth = 8f
 
@@ -70,13 +73,8 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
     }
 
     private fun drawClockFace(canvas: Canvas, clockRadius: Float) {
-        canvas.drawColor(Color.TRANSPARENT)
 
         val innerRadius = clockRadius - 20f
-
-        paint.color = Color.BLACK
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 8f
         canvas.drawCircle(center.x, center.y, innerRadius, paint)
 
         for (i in 0..11) {
@@ -120,7 +118,6 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         canvas.drawLine(hourHandStartX, hourHandStartY, hourHandEndX, hourHandEndY, hourHandPaint)
     }
 
-
     fun setSecondHandColor(color: Int) {
         secondHandPaint.color = color
         invalidate()
@@ -153,20 +150,10 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         val timeAnimator = ValueAnimator.ofFloat(0f, 1f)
         timeAnimator.duration = 1000
         timeAnimator.repeatCount = ValueAnimator.INFINITE
-        timeAnimator.addUpdateListener { animation ->
+        timeAnimator.addUpdateListener {
             currentDate = Date()
             invalidate()
         }
         timeAnimator.start()
     }
 }
-
-
-
-
-
-
-
-
-
-
