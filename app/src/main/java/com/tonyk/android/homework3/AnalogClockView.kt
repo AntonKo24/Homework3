@@ -16,10 +16,10 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
 
     private val paint = Paint()
     private val center = PointF(0f, 0f)
-    private val clockRadius = 300f
-    private val secondHandLength = 260f
-    private val minuteHandLength = 230f
-    private val hourHandLength = 200f
+    private var clockRadius = DEFAULT_CLOCK_RADIUS
+    private var secondHandLength = DEFAULT_SECOND_HAND_LENGTH
+    private var minuteHandLength = DEFAULT_MINUTE_HAND_LENGTH
+    private var hourHandLength = DEFAULT_HOUR_HAND_LENGTH
     private val tickLength = 20f
     private val tickPaint = Paint()
     private val secondHandPaint = Paint()
@@ -28,9 +28,7 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
     private val calendar = Calendar.getInstance()
     private var currentDate = Date()
 
-
     init {
-
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 8f
 
@@ -45,10 +43,22 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
 
         hourHandPaint.style = Paint.Style.STROKE
         hourHandPaint.strokeWidth = 18f
-
         applyAttributes(attrs)
         initializeTimeAnimation()
+    }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val width = MeasureSpec.getSize(widthMeasureSpec)
+        val height = MeasureSpec.getSize(heightMeasureSpec)
+        val scaleFactor = width.coerceAtMost(height) / DEFAULT_SIZE
+
+        clockRadius = DEFAULT_CLOCK_RADIUS * scaleFactor
+        secondHandLength = DEFAULT_SECOND_HAND_LENGTH * scaleFactor
+        minuteHandLength = DEFAULT_MINUTE_HAND_LENGTH * scaleFactor
+        hourHandLength = DEFAULT_HOUR_HAND_LENGTH * scaleFactor
+
+        setMeasuredDimension((clockRadius * 2).toInt(), (clockRadius * 2).toInt())
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -59,15 +69,8 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
             center.x = width.toFloat() / 2
             center.y = height.toFloat() / 2
 
-            val scaleFactor = width.toFloat().coerceAtMost(height.toFloat()) / 600f
-
-            val scaledClockRadius = clockRadius * scaleFactor
-            val scaledSecondHandLength = secondHandLength * scaleFactor
-            val scaledMinuteHandLength = minuteHandLength * scaleFactor
-            val scaledHourHandLength = hourHandLength * scaleFactor
-
-            drawClockFace(this, scaledClockRadius)
-            drawClockHands(this, scaledSecondHandLength, scaledMinuteHandLength, scaledHourHandLength)
+            drawClockFace(this, clockRadius)
+            drawClockHands(this, secondHandLength, minuteHandLength, hourHandLength)
         }
     }
 
@@ -87,7 +90,6 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
             canvas.drawLine(startX, startY, endX, endY, tickPaint)
         }
     }
-
 
     private fun drawClockHands(canvas: Canvas, secondHandLength: Float, minuteHandLength: Float, hourHandLength: Float) {
         calendar.time = currentDate
@@ -114,7 +116,6 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         drawHand(canvas, center.x - minuteHandOffsetX, center.y - minuteHandOffsetY, center.x + minuteHandLength * cos(minuteAngle).toFloat(), center.y + minuteHandLength * sin(minuteAngle).toFloat(), minuteHandPaint)
         drawHand(canvas, center.x - hourHandOffsetX, center.y - hourHandOffsetY, center.x + hourHandLength * cos(hourAngle).toFloat(), center.y + hourHandLength * sin(hourAngle).toFloat(), hourHandPaint)
     }
-
 
     fun setSecondHandColor(color: Int) {
         secondHandPaint.color = color
@@ -157,5 +158,13 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
 
     private fun drawHand(canvas: Canvas, startX: Float, startY: Float, endX: Float, endY: Float, paint: Paint) {
         canvas.drawLine(startX, startY, endX, endY, paint)
+    }
+
+    companion object {
+        private const val DEFAULT_SIZE = 600f
+        private const val DEFAULT_CLOCK_RADIUS = 300f
+        private const val DEFAULT_SECOND_HAND_LENGTH = 260f
+        private const val DEFAULT_MINUTE_HAND_LENGTH = 230f
+        private const val DEFAULT_HOUR_HAND_LENGTH = 200f
     }
 }
