@@ -93,30 +93,26 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         val minute = calendar.get(Calendar.MINUTE)
         val second = calendar.get(Calendar.SECOND)
 
-        val secondAngle = Math.PI * 2 * second / 60 - Math.PI / 2
-        val minuteAngle = Math.PI * 2 * (minute + second / 60.0) / 60 - Math.PI / 2
-        val hourAngle = Math.PI * 2 * (hour + minute / 60.0) / 12 - Math.PI / 2
+        val secondAngle = Math.toRadians(360.0 * second / 60 - 90.0)
+        val minuteAngle = Math.toRadians(360.0 * (minute + second / 60.0) / 60 - 90.0)
+        val hourAngle = Math.toRadians(360.0 * (hour + minute / 60.0) / 12 - 90.0)
 
         val offset = 0.2f * secondHandLength
 
-        val secondHandStartX = center.x - offset * cos(secondAngle).toFloat()
-        val secondHandStartY = center.y - offset * sin(secondAngle).toFloat()
-        val secondHandEndX = center.x + secondHandLength * cos(secondAngle).toFloat()
-        val secondHandEndY = center.y + secondHandLength * sin(secondAngle).toFloat()
-        canvas.drawLine(secondHandStartX, secondHandStartY, secondHandEndX, secondHandEndY, secondHandPaint)
+        val secondHandOffsetX = offset * cos(secondAngle).toFloat()
+        val secondHandOffsetY = offset * sin(secondAngle).toFloat()
 
-        val minuteHandStartX = center.x - offset * cos(minuteAngle).toFloat()
-        val minuteHandStartY = center.y - offset * sin(minuteAngle).toFloat()
-        val minuteHandEndX = center.x + minuteHandLength * cos(minuteAngle).toFloat()
-        val minuteHandEndY = center.y + minuteHandLength * sin(minuteAngle).toFloat()
-        canvas.drawLine(minuteHandStartX, minuteHandStartY, minuteHandEndX, minuteHandEndY, minuteHandPaint)
+        val minuteHandOffsetX = offset * cos(minuteAngle).toFloat()
+        val minuteHandOffsetY = offset * sin(minuteAngle).toFloat()
 
-        val hourHandStartX = center.x - offset * cos(hourAngle).toFloat()
-        val hourHandStartY = center.y - offset * sin(hourAngle).toFloat()
-        val hourHandEndX = center.x + hourHandLength * cos(hourAngle).toFloat()
-        val hourHandEndY = center.y + hourHandLength * sin(hourAngle).toFloat()
-        canvas.drawLine(hourHandStartX, hourHandStartY, hourHandEndX, hourHandEndY, hourHandPaint)
+        val hourHandOffsetX = offset * cos(hourAngle).toFloat()
+        val hourHandOffsetY = offset * sin(hourAngle).toFloat()
+
+        drawHand(canvas, center.x - secondHandOffsetX, center.y - secondHandOffsetY, center.x + secondHandLength * cos(secondAngle).toFloat(), center.y + secondHandLength * sin(secondAngle).toFloat(), secondHandPaint)
+        drawHand(canvas, center.x - minuteHandOffsetX, center.y - minuteHandOffsetY, center.x + minuteHandLength * cos(minuteAngle).toFloat(), center.y + minuteHandLength * sin(minuteAngle).toFloat(), minuteHandPaint)
+        drawHand(canvas, center.x - hourHandOffsetX, center.y - hourHandOffsetY, center.x + hourHandLength * cos(hourAngle).toFloat(), center.y + hourHandLength * sin(hourAngle).toFloat(), hourHandPaint)
     }
+
 
     fun setSecondHandColor(color: Int) {
         secondHandPaint.color = color
@@ -156,4 +152,9 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         }
         timeAnimator.start()
     }
+
+    private fun drawHand(canvas: Canvas, startX: Float, startY: Float, endX: Float, endY: Float, paint: Paint) {
+        canvas.drawLine(startX, startY, endX, endY, paint)
+    }
+
 }
