@@ -8,10 +8,6 @@ import android.graphics.Paint
 import android.graphics.PointF
 import android.util.AttributeSet
 import android.view.View
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.cos
@@ -91,33 +87,41 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
 
             val timeText = timeFormat.format(currentDate)
 
+            val scaleFactor = width.toFloat().coerceAtMost(height.toFloat()) / 600f
 
-            drawClockFace(this)
-            drawClockHands(this)
+            val scaledClockRadius = clockRadius * scaleFactor
+            val scaledSecondHandLength = secondHandLength * scaleFactor
+            val scaledMinuteHandLength = minuteHandLength * scaleFactor
+            val scaledHourHandLength = hourHandLength * scaleFactor
+
+            drawClockFace(this, scaledClockRadius)
+            drawClockHands(this, scaledSecondHandLength, scaledMinuteHandLength, scaledHourHandLength)
             drawTimeText(this, timeText)
 
         }
     }
 
-    private fun drawClockFace(canvas: Canvas) {
+    private fun drawClockFace(canvas: Canvas, clockRadius: Float) {
         canvas.drawColor(Color.TRANSPARENT)
+
+        val innerRadius = clockRadius - 20f
 
         paint.color = Color.BLACK
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 8f
-        canvas.drawCircle(center.x, center.y, clockRadius, paint)
+        canvas.drawCircle(center.x, center.y, innerRadius, paint)
 
         for (i in 0..11) {
             val angle = Math.PI / 6 * i
-            val startX = center.x + (clockRadius - tickLength) * cos(angle).toFloat()
-            val startY = center.y + (clockRadius - tickLength) * sin(angle).toFloat()
-            val endX = center.x + clockRadius * cos(angle).toFloat()
-            val endY = center.y + clockRadius * sin(angle).toFloat()
+            val startX = center.x + (innerRadius - tickLength) * cos(angle).toFloat()
+            val startY = center.y + (innerRadius - tickLength) * sin(angle).toFloat()
+            val endX = center.x + innerRadius * cos(angle).toFloat()
+            val endY = center.y + innerRadius * sin(angle).toFloat()
             canvas.drawLine(startX, startY, endX, endY, tickPaint)
         }
     }
 
-    private fun drawClockHands(canvas: Canvas) {
+    private fun drawClockHands(canvas: Canvas, secondHandLength: Float, minuteHandLength: Float, hourHandLength: Float) {
         calendar.time = currentDate
         val hour = calendar.get(Calendar.HOUR)
         val minute = calendar.get(Calendar.MINUTE)
@@ -169,7 +173,6 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         hourHandPaint.color = color
         invalidate()
     }
-
 }
 
 
