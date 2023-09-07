@@ -8,7 +8,6 @@ import android.graphics.Paint
 import android.graphics.PointF
 import android.util.AttributeSet
 import android.view.View
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
@@ -17,7 +16,7 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
 
     private val paint = Paint()
     private val center = PointF(0f, 0f)
-    private var clockRadius = 300f
+    private val clockRadius = 300f
     private val secondHandLength = 260f
     private val minuteHandLength = 230f
     private val hourHandLength = 200f
@@ -26,28 +25,14 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
     private val secondHandPaint = Paint()
     private val minuteHandPaint = Paint()
     private val hourHandPaint = Paint()
-    private val textPaint = Paint()
     private val calendar = Calendar.getInstance()
-
-    private val timeFormat = SimpleDateFormat("hh:mm:ss", Locale.getDefault())
     private var currentDate = Date()
 
 
     init {
 
-        val timeAnimator = ValueAnimator.ofFloat(0f, 1f)
-        timeAnimator.duration = 1000
-        timeAnimator.repeatCount = ValueAnimator.INFINITE
-        timeAnimator.addUpdateListener { animation ->
-            currentDate = Date()
-            invalidate()
-        }
-        timeAnimator.start()
-
-
-
         tickPaint.style = Paint.Style.STROKE
-        tickPaint.strokeWidth = 4f
+        tickPaint.strokeWidth = 8f
 
         secondHandPaint.style = Paint.Style.STROKE
         secondHandPaint.strokeWidth = 8f
@@ -56,24 +41,10 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         minuteHandPaint.strokeWidth = 12f
 
         hourHandPaint.style = Paint.Style.STROKE
-        hourHandPaint.strokeWidth = 16f
+        hourHandPaint.strokeWidth = 18f
 
-        textPaint.color = Color.BLACK
-        textPaint.style = Paint.Style.FILL
-        textPaint.textSize = 40f
-
-
-
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.AnalogClockView)
-        val secondHandColor = typedArray.getColor(R.styleable.AnalogClockView_secondHandColor, Color.RED)
-        val minuteHandColor = typedArray.getColor(R.styleable.AnalogClockView_minuteHandColor, Color.BLUE)
-        val handColor = typedArray.getColor(R.styleable.AnalogClockView_hourHandColor, Color.BLACK)
-        typedArray.recycle()
-
-        secondHandPaint.color = secondHandColor
-        minuteHandPaint.color = minuteHandColor
-        hourHandPaint.color = handColor
-
+        applyAttributes(attrs)
+        initializeTimeAnimation()
 
     }
 
@@ -85,8 +56,6 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
             center.x = width.toFloat() / 2
             center.y = height.toFloat() / 2
 
-            val timeText = timeFormat.format(currentDate)
-
             val scaleFactor = width.toFloat().coerceAtMost(height.toFloat()) / 600f
 
             val scaledClockRadius = clockRadius * scaleFactor
@@ -96,7 +65,6 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
 
             drawClockFace(this, scaledClockRadius)
             drawClockHands(this, scaledSecondHandLength, scaledMinuteHandLength, scaledHourHandLength)
-            drawTimeText(this, timeText)
 
         }
     }
@@ -152,12 +120,6 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
         canvas.drawLine(hourHandStartX, hourHandStartY, hourHandEndX, hourHandEndY, hourHandPaint)
     }
 
-    private fun drawTimeText(canvas: Canvas, timeText: String) {
-        val textWidth = textPaint.measureText(timeText)
-        val x = center.x - textWidth / 2
-        val y = center.y + 100
-        canvas.drawText(timeText, x, y, textPaint)
-    }
 
     fun setSecondHandColor(color: Int) {
         secondHandPaint.color = color
@@ -172,6 +134,30 @@ class AnalogClockView(context: Context, attrs: AttributeSet?) : View(context, at
     fun setHourHandColor(color: Int) {
         hourHandPaint.color = color
         invalidate()
+    }
+
+    private fun applyAttributes(attrs: AttributeSet?) {
+
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.AnalogClockView)
+        val secondHandColor = typedArray.getColor(R.styleable.AnalogClockView_secondHandColor, Color.RED)
+        val minuteHandColor = typedArray.getColor(R.styleable.AnalogClockView_minuteHandColor, Color.BLUE)
+        val handColor = typedArray.getColor(R.styleable.AnalogClockView_hourHandColor, Color.BLACK)
+        typedArray.recycle()
+
+        secondHandPaint.color = secondHandColor
+        minuteHandPaint.color = minuteHandColor
+        hourHandPaint.color = handColor
+    }
+
+    private fun initializeTimeAnimation() {
+        val timeAnimator = ValueAnimator.ofFloat(0f, 1f)
+        timeAnimator.duration = 1000
+        timeAnimator.repeatCount = ValueAnimator.INFINITE
+        timeAnimator.addUpdateListener { animation ->
+            currentDate = Date()
+            invalidate()
+        }
+        timeAnimator.start()
     }
 }
 
